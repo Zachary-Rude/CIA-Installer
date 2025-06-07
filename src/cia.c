@@ -229,17 +229,16 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	// something, is equal to the size of the cia when all of the data has been
 	// read (and theres a final write step)
 	consoleSelect(&top_screen);
-	consoleInitProgress("Installing CIA (press [B] to cancel)", "0.0% complete (0 B/s)", 0);
+	consoleInitProgress("Installing CIA", "0.0% complete (0 B/s)\n    Press [B] to cancel", 0);
 	do {
-		percentage = ((double)installOffset) / ((double)ciaSize);
-		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)", percentage * 100, humanSize(bytesPerSecond));
-		consoleSetProgressData(progressText, percentage);
-
 		hidScanInput();
 		if (hidKeysDown() & KEY_B) {
 			cancel = true;
 			break;
 		}
+		percentage = ((double)installOffset) / ((double)ciaSize);
+		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)\n    Press [B] to cancel", percentage * 100, humanSize(bytesPerSecond));
+		consoleSetProgressData(progressText, percentage);
 
 		// read data with BUFSIZE size into ciaBuf
 		bytesRead = fread(ciaBuf, 1, BUFSIZE, ciaFile);
@@ -396,17 +395,16 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 	// something, is equal to the size of the cia when all of the data has been
 	// read (and theres a final write step)
 	consoleSelect(&top_screen);
-	consoleInitProgress("Installing CIA (press [B] to cancel)", "0.0% complete (0 B/s)", 0);
+	consoleInitProgress("Installing CIA", "0.0% complete (0 B/s)\n    Press [B] to cancel", 0);
 	do {
-		percentage = ((double)installOffset) / ((double)ciaSize);
-		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)\r", percentage * 100, humanSize(bytesPerSecond));
-		consoleSetProgressData(progressText, percentage);
-
 		hidScanInput();
 		if (hidKeysDown() & KEY_B) {
 			cancel = true;
 			break;
 		}
+		percentage = ((double)installOffset) / ((double)ciaSize);
+		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)\n    Press [B] to cancel", percentage * 100, humanSize(bytesPerSecond));
+		consoleSetProgressData(progressText, percentage);
 
 		// read data with BUFSIZE size into ciaBuf
 		bytesRead = fread(ciaBuf, 1, BUFSIZE, ciaFile);
