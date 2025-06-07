@@ -222,6 +222,7 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	u64 lastBytesPerSecondUpdate = osGetTime();
 	u32 bytesSinceUpdate = 0;
 	u64 remainingTime = 0;
+	bool cancel = false;
 
 	char progressText[256];
 	// go into a loop where data is written until all of the data is written,
@@ -229,11 +230,17 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	// something, is equal to the size of the cia when all of the data has been
 	// read (and theres a final write step)
 	consoleSelect(&top_screen);
-	consoleInitProgress("Installing CIA", "0.0% complete (0 B/s)", 0);
+	consoleInitProgress("Installing CIA (press [B] to cancel)", "0.0% complete (0 B/s)", 0);
 	do {
 		percentage = ((double)installOffset) / ((double)ciaSize);
-		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)\r", percentage * 100, humanSize(bytesPerSecond));
+		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)", percentage * 100, humanSize(bytesPerSecond));
 		consoleSetProgressData(progressText, percentage);
+
+		hidScanInput();
+		if (hidKeysDown() & KEY_B) {
+			cancel = true;
+			break;
+		}
 
 		// read data with BUFSIZE size into ciaBuf
 		bytesRead = fread(ciaBuf, 1, BUFSIZE, ciaFile);
@@ -254,7 +261,38 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 			lastBytesPerSecondUpdate = time;
 		}
 	} while (installOffset < ciaSize);
+	if (cancel) {
+		fclose(ciaFile);
+		free(ciaBuf);
+		FSFILE_Close(fileHandle);
+		result = AM_CancelCIAInstall(ciaHandle);
+		if (R_FAILED(result)) {
+			err_show_res(res, "AM_CancelCiaInstall");
+			return;
+		}
+		consoleClear();
+		if (showMessage) {
+			draw_clearscrn();
+			printf("\n\n\n\t\t%sCIA installation canceled.%s", FG_GREEN, RESET);
+			printf("\n\n\t\tPress [A] to continue");
+			while (aptMainLoop()) {
+				gspWaitForVBlank();
+				hidScanInput();
+				u32 exitkDown = hidKeysDown();
+				if (exitkDown & KEY_A)
+					break;
+				gfxFlushBuffers();
+				gfxSwapBuffers();
+			}
+		} else {
+			consoleSelect(&debug_screen);
+			printf("%sCIA installation canceled%s\n", FG_GREEN, RESET);
+		}
+		return;
+	}
 	if (R_FAILED(res)) {
+		fclose(ciaFile);
+		free(ciaBuf);
 		FSFILE_Close(fileHandle);
 		AM_CancelCIAInstall(ciaHandle);
 		result = res;
@@ -351,6 +389,7 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 	u64 lastBytesPerSecondUpdate = osGetTime();
 	u32 bytesSinceUpdate = 0;
 	u64 remainingTime = 0;
+	bool cancel = false;
 
 	char progressText[256];
 	// go into a loop where data is written until all of the data is written,
@@ -358,11 +397,17 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 	// something, is equal to the size of the cia when all of the data has been
 	// read (and theres a final write step)
 	consoleSelect(&top_screen);
-	consoleInitProgress("Installing CIA", "0.0% complete (0 B/s)", 0);
+	consoleInitProgress("Installing CIA (press [B] to cancel)", "0.0% complete (0 B/s)", 0);
 	do {
 		percentage = ((double)installOffset) / ((double)ciaSize);
 		snprintf(progressText, sizeof progressText, "%.1f%% complete (%s/s)\r", percentage * 100, humanSize(bytesPerSecond));
 		consoleSetProgressData(progressText, percentage);
+
+		hidScanInput();
+		if (hidKeysDown() & KEY_B) {
+			cancel = true;
+			break;
+		}
 
 		// read data with BUFSIZE size into ciaBuf
 		bytesRead = fread(ciaBuf, 1, BUFSIZE, ciaFile);
@@ -383,6 +428,35 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 			lastBytesPerSecondUpdate = time;
 		}
 	} while (installOffset < ciaSize);
+	if (cancel) {
+		fclose(ciaFile);
+		free(ciaBuf);
+		FSFILE_Close(fileHandle);
+		result = AM_CancelCIAInstall(ciaHandle);
+		if (R_FAILED(result)) {
+			err_show_res(res, "AM_CancelCiaInstall");
+			return;
+		}
+		consoleClear();
+		if (showMessage) {
+			draw_clearscrn();
+			printf("\n\n\n\t\t%sCIA installation canceled.%s", FG_GREEN, RESET);
+			printf("\n\n\t\tPress [A] to continue");
+			while (aptMainLoop()) {
+				gspWaitForVBlank();
+				hidScanInput();
+				u32 exitkDown = hidKeysDown();
+				if (exitkDown & KEY_A)
+					break;
+				gfxFlushBuffers();
+				gfxSwapBuffers();
+			}
+		} else {
+			consoleSelect(&debug_screen);
+			printf("%sCIA installation canceled%s\n", FG_GREEN, RESET);
+		}
+		return;
+	}
 	if (R_FAILED(result)) {
 		FSFILE_Close(fileHandle);
 		AM_CancelCIAInstall(ciaHandle);
