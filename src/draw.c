@@ -31,27 +31,26 @@ void draw_filearr(int clr) {
 		}
 		for (int i = 0; i < max_files_to_print; i++) {
 			if (i == selected) {
-				if (!file_arr[i+scroll].isfile) {
-					printf("\n%s ->  [%-39.39s]%s", FG_YELLOW_LIGHT, file_arr[i+scroll].name, RESET);
+				if (!file_arr[i + scroll].isfile) {
+					printf("\n%s ->  [%-39.39s]%s", FG_YELLOW_LIGHT, file_arr[i + scroll].name, RESET);
 				} else {
-					printf("\n%s ->  %-41.41s%s", FG_CYAN_LIGHT, file_arr[i+scroll].name, RESET);
+					printf("\n%s ->  %-41.41s%s", FG_CYAN_LIGHT, file_arr[i + scroll].name, RESET);
 				}
 			} else {
-				if (!file_arr[i+scroll].isfile) {
-					printf("\n%s     [%-39.39s]%s", FG_YELLOW, file_arr[i+scroll].name, RESET);
+				if (!file_arr[i + scroll].isfile) {
+					printf("\n%s     [%-39.39s]%s", FG_YELLOW, file_arr[i + scroll].name, RESET);
 				} else {
-					printf("\n%s     %-41.41s%s", FG_CYAN, file_arr[i+scroll].name, RESET);
+					printf("\n%s     %-41.41s%s", FG_CYAN, file_arr[i + scroll].name, RESET);
 				}
 			}
 		}
 
-		if ((size_of_file_array > MAX_FILES_ON_SCREEN) && (selected + scroll != size_of_file_array-1)) {
+		if ((size_of_file_array > MAX_FILES_ON_SCREEN) && (selected + scroll != size_of_file_array - 1))
 			printf("\n\n\\/");
-		} else {
+		else
 			printf("\n\n  ");
-		}
 	} else {
-		printf("\n\n\t\t%s- Folder is empty -%s", BLACK_ON_WHITE, RESET);
+		printf("\n\n\t\t%sFolder is empty%s", FG_RED, RESET);
 	}
 }
 

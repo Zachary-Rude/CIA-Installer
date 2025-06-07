@@ -462,8 +462,6 @@ int main(int argc, char *argv[]) {
 		if (quit_for_err)
 			break;
 
-		consoleSelect(&header_screen);
-
 		u32 kDown = hidKeysDown();
 		u32 kHeld = hidKeysHeld();
 

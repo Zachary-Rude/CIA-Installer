@@ -4,7 +4,7 @@
 #define RESET_TO_TOP_LEFT "\x1b[0;0H"
 #define RESET             "\x1b[0m"
 #define FG_BLACK          "\x1b[30m"
-#define FG_RED            "\x1b[31m"
+#define FG_RED            "\x1b[1;31m"
 #define FG_GREEN          "\x1b[32m"
 #define FG_YELLOW         "\x1b[33m"
 #define FG_YELLOW_LIGHT   "\x1b[1;33m"
