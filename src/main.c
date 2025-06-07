@@ -398,7 +398,6 @@ int main(int argc, char *argv[]) {
 	Handle ciaHandle, fileHandle;
 	AM_TitleEntry info;
 	Result res = 0;
-	char *availableSpace;
 	gfxInitDefault();
 	consoleInit(GFX_TOP, &top_screen);
 	consoleInit(GFX_TOP, &header_screen);
@@ -426,7 +425,7 @@ int main(int argc, char *argv[]) {
 
 	consoleSelect(&header_screen);
 	printf("\e[47;30m\e[2J\e[H"); //invert colors and clear screen
-	printf("CIA Installer v%s [%s]", APP_VERSION, __DATE__, (header_screen.consoleWidth - strlen(availableSpace)), availableSpace);
+	printf("CIA Installer v%s [%s]", APP_VERSION, __DATE__);
 
 	consoleSelect(&debug_screen);
 	printf("Started...\n");
@@ -567,7 +566,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	free(file_arr);
-	free(availableSpace);
 	fsExit();
 	amExit();
 	gfxExit();
