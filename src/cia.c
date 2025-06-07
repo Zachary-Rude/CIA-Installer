@@ -17,7 +17,7 @@ char *basename(char const *path) {
 	else
 		return strdup(s + 1);
 }
-char *humanSize(uint64_t bytes) {
+static const char *humanSize(uint64_t bytes) {
 	char *suffix[] = {"B", "KiB", "MiB", "GiB", "TiB"};
 	char length = sizeof(suffix) / sizeof(suffix[0]);
 
@@ -29,7 +29,7 @@ char *humanSize(uint64_t bytes) {
 			dblBytes = bytes / 1024.0;
 	}
 
-	char *output = malloc(sizeof(char) * 200);
+	static char output[200];
 	snprintf(output, sizeof(output), "%.02lf %s", dblBytes, suffix[i]);
 	return output;
 }
