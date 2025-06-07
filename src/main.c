@@ -91,8 +91,7 @@ static void qrHandler(qr_data *data) {
 		if (threadCreate(camThread, data, 0x10000, 0x1A, 1, true) != NULL) {
 			data->capturing = true;
 			//printf("capturing\n");
-		}
-		else {
+		} else {
 			//printf("qrExit: not capturing\n");
 			qrExit(data);
 			return;
@@ -146,9 +145,8 @@ static void qrHandler(qr_data *data) {
 
 static void qrExit(qr_data *data) {
 	svcSignalEvent(data->cancel);
-	while (!data->finished) {
+	while (!data->finished)
 		svcSleepThread(1000000);
-	}
 	data->capturing = false;
 	free(data->camera_buffer);
 	quirc_destroy(data->context);
@@ -226,9 +224,8 @@ static void camThread(void *arg) {
 	//printf("capture stopped\n");
 
 	bool busy = false;
-	while (R_SUCCEEDED(CAMU_IsBusy(&busy, PORT_CAM1)) && busy) {
+	while (R_SUCCEEDED(CAMU_IsBusy(&busy, PORT_CAM1)) && busy)
 		svcSleepThread(1000000);
-	}
 
 	CAMU_ClearBuffer(PORT_CAM1);
 	CAMU_Activate(SELECT_NONE);
@@ -271,15 +268,13 @@ size_t handle_data(char* ptr, size_t size, size_t nmemb, void* userdata) {
 
 	if (need_realloc) {
 		char *new_buf = realloc(result_buf, result_sz);
-		if (!new_buf) {
+		if (!new_buf)
 			return 0;
-		}
 		result_buf = new_buf;
 	}
 
-	if (!result_buf) {
+	if (!result_buf)
 		return 0;
-	}
 
 	memcpy(result_buf + result_written, ptr, bsz);
 	result_written += bsz;
@@ -331,12 +326,10 @@ void download(const uint8_t* url) {
 	result_buf = NULL;
 	result_written = 0;
 	result = cres == CURLE_OK ? 0 : (Result)cres;
-	if (R_SUCCEEDED(result)) {
+	if (R_SUCCEEDED(result))
 		printf("%sSuccessfully downloaded %s%s\n", FG_GREEN, url, RESET);
-	}
-	else {
+	else
 		printf("%sDownload failed:  %08lX%s\n", FG_RED, result, RESET);
-	}
 }
 
 int download_progress(void *bar, double t, double d, double ultotal, double ulnow) {
@@ -393,11 +386,10 @@ void downloadURL(const char* url) {
 	result_buf = NULL;
 	result_written = 0;
 	result = cres == CURLE_OK ? 0 : (Result)cres;
-	if (R_SUCCEEDED(result)) {
+	if (R_SUCCEEDED(result))
 		printf("%sSuccessfully downloaded %s%s\n", FG_GREEN, url, RESET);
-	} else {
+	else
 		err_show_res(result, "Download");
-	}
 }
 
 int main(int argc, char *argv[]) {
@@ -468,9 +460,8 @@ int main(int argc, char *argv[]) {
 		gspWaitForVBlank();
 		hidScanInput();
 
-		if (quit_for_err) {
+		if (quit_for_err)
 			break;
-		}
 
 		u32 kDown = hidKeysDown();
 		u32 kHeld = hidKeysHeld();
@@ -534,7 +525,7 @@ int main(int argc, char *argv[]) {
 			while (fgets(buf, sizeof buf, fp)) {
 				if (buf[0] != '\n' || buf[0] != '\r') {
 					int len = strlen(buf);
-					if (len > 0 && buf[len-1] == '\n')
+					if (len > 0 && buf[len - 1] == '\n')
 						buf[len-1] = 0;
 					installCiaFromFile(buf, MEDIATYPE_SD, false, false);
 					if (R_FAILED(result)) 
@@ -557,9 +548,8 @@ int main(int argc, char *argv[]) {
 				gspWaitForVBlank();
 				hidScanInput();
 				u32 exitkDown = hidKeysDown();
-				if (exitkDown & KEY_A) {
+				if (exitkDown & KEY_A)
 					break;
-				}
 				gfxFlushBuffers();
 				gfxSwapBuffers();
 			}
@@ -580,8 +570,7 @@ int main(int argc, char *argv[]) {
 	amExit();
 	gfxExit();
 
-	if (old_time_limit != UINT32_MAX) {
+	if (old_time_limit != UINT32_MAX)
 		APT_SetAppCpuTimeLimit(old_time_limit);
-	}
 	return 0;
 }
