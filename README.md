@@ -14,6 +14,22 @@ CIA Installer is a simple 3DS homebrew program for installing CIA files, with a 
 + Title manager feature
 + QR code scanning
 
+## Install
+
+### 3DSX
+
+Download `CIA-Installer.3dsx` from the [releases page](https://github.com/Zachary-Rude/CIA-Installer/releases/latest) and copy it to `sdmc:/3ds/CIA-Installer` on your 3DS's SD card.
+
+### CIA
+Download `CIA-Installer.cia` from the [releases page](https://github.com/Zachary-Rude/CIA-Installer/releases/latest), copy it to your 3DS's SD card, and install it with FBI.
+
+> [!WARNING]  
+> Unless you are running the 3DSX version of this app, DO NOT use this app to install its own CIA as it will NOT work properly.
+
+Alternatively, you can install this app by scanning the QR code below with FBI.
+
+![QR code for CIA Installer](img/qr-code.png)
+
 ## Credits
 
 File browser interface taken from [3DES](https://github.com/psidex/3DES), with modifications by me
