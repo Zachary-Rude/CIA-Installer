@@ -1,0 +1,11 @@
+*.elf
+*.3dsx
+*.3ds
+*.cxi
+*.cia
+*.smdh
+*.bnr
+*.icn
+romfs/
+build/
+.vscode/
