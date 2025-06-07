@@ -525,7 +525,7 @@ int main(int argc, char *argv[]) {
 
 			fp = fopen("sdmc:/3ds/CIA-Installer/queue.txt", "r");
 			if (fp == NULL) {
-				err_show("main.c", __LINE__-2, "failed to open queue file");
+				err_show_errno(errno, "fopen");
 				continue;
 			}
 

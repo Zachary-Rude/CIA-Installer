@@ -192,7 +192,7 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	FILE *ciaFile = fopen(file_path, "r");
 	if (ciaFile == NULL) {
 		consoleClear();
-		printf("file not found :(\n");
+		err_show_errno(errno, "fopen");
 		res = -1;
 		return res;
 	}
@@ -400,7 +400,7 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 		FSFILE_Close(fileHandle);
 		consoleClear();
 		err_show_res(result, "AM_FinishCiaInstall");
-		return res;
+		return;
 	}
 	// close the cia file
 	fclose(ciaFile);
@@ -434,5 +434,5 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 			gfxSwapBuffers();
 		}
 	}
-	return res;
+	return;
 }
