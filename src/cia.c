@@ -47,9 +47,8 @@ FS_MediaType getTitleDestination(u64 titleId) {
 // https://github.com/LiquidFenrir/MultiUpdater/blob/rewrite/source/cia.c
 static void deletePrevious(u64 titleid) {
 	u32 titles_amount = 0;
-	if (R_FAILED(result = AM_GetTitleCount(MEDIATYPE_SD, &titles_amount))) {
+	if (R_FAILED(result = AM_GetTitleCount(MEDIATYPE_SD, &titles_amount)))
 		return;
-	}
 	
 	u32 read_titles = 0;
 	u64* titleIDs = malloc(titles_amount * sizeof(u64));
@@ -186,15 +185,15 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	draw_clearscrn();
 	char file_path[MAX_PATH_SIZE];
 	strcpy(file_path, current_path);
-	strcat(file_path, file_arr[selected+scroll].name);
+	strcat(file_path, file_arr[selected + scroll].name);
 	consoleSelect(&debug_screen);
 	// open cia file with fopen
 	FILE *ciaFile = fopen(file_path, "r");
 	if (ciaFile == NULL) {
 		consoleClear();
 		err_show_errno(errno, "fopen");
-		res = -1;
-		return res;
+		result = MAKERESULT(RL_STATUS, RS_NOTFOUND, RM_FS, 120);
+		return;
 	}
 	// get size of cia file with fseek and ftell, then return to file beginning
 	fseek(ciaFile, 0, SEEK_END);
@@ -212,12 +211,12 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	}
 	deletePrevious(info.titleID);
 	// start cia install for provided mediatype with the handle provided earlier
-	res = AM_StartCiaInstall(mediaType, &ciaHandle);
-	if (R_FAILED(res)) {
+	result = AM_StartCiaInstall(mediaType, &ciaHandle);
+	if (R_FAILED(result)) {
 		consoleClear();
 		AM_CancelCIAInstall(ciaHandle);
-		err_show_res(res, "AM_StartCiaInstall");
-		return res;
+		err_show_res(result, "AM_StartCiaInstall");
+		return;
 	}
 	
 	u64 lastBytesPerSecondUpdate = osGetTime();
@@ -241,9 +240,8 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 		// write ciaBuf to the handle at the offset where we are at right now
 		res = FSFILE_Write(ciaHandle, NULL, installOffset, ciaBuf, BUFSIZE,
 								FS_WRITE_FLUSH);
-		if (R_FAILED(res)) {
+		if (R_FAILED(res))
 			break;
-		}
 		// add how far weve gotten to our offset variable
 		installOffset += bytesRead;
 		bytesSinceUpdate += bytesRead;
@@ -259,19 +257,20 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 	if (R_FAILED(res)) {
 		FSFILE_Close(fileHandle);
 		AM_CancelCIAInstall(ciaHandle);
-		err_show_res(res, "FSFILE_Write");
+		result = res;
+		err_show_res(result, "FSFILE_Write");
 		return;
 	}
 	// end the cia install for provided handle we used to start cia install and
 	// where we wrote the data to
-	res = AM_FinishCiaInstall(ciaHandle);
+	result = AM_FinishCiaInstall(ciaHandle);
 	if (R_FAILED(res)) {
 		fclose(ciaFile);
 		free(ciaBuf);
 		FSFILE_Close(fileHandle);
 		consoleClear();
-		err_show_res(res, "AM_FinishCiaInstall");
-		return res;
+		err_show_res(result, "AM_FinishCiaInstall");
+		return;
 	}
 	// close the cia file
 	fclose(ciaFile);
@@ -283,7 +282,7 @@ Result installCia(FS_MediaType mediaType, bool deleteWhenDone, bool showMessage)
 		int ret = remove(file_path);
 		if (ret != 0) {
 			consoleClear();
-			printf("%sUnable to delete %s%s\n", BG_RED, file_path, RESET);
+			err_show_errno(errno, "remove");
 			return;
 		}
 	}
@@ -321,8 +320,8 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 	FILE *ciaFile = fopen(filePath, "r");
 	if (ciaFile == NULL) {
 		consoleClear();
-		printf("file not found :(\n");
-		result = MAKERESULT(RL_STATUS, RS_NOTFOUND, RM_FS, RD_NOT_FOUND);
+		err_show_errno(errno, "fopen");
+		result = MAKERESULT(RL_STATUS, RS_NOTFOUND, RM_FS, 120);
 		return;
 	}
 	// get size of cia file with fseek and ftell, then return to file beginning
@@ -370,9 +369,8 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 		// write ciaBuf to the handle at the offset where we are at right now
 		result = FSFILE_Write(ciaHandle, NULL, installOffset, ciaBuf, BUFSIZE,
 								FS_WRITE_FLUSH);
-		if (R_FAILED(result)) {
+		if (R_FAILED(result))
 			break;
-		}
 		// add how far weve gotten to our offset variable
 		installOffset += bytesRead;
 		bytesSinceUpdate += bytesRead;
@@ -413,8 +411,9 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 			int ret = remove(filePath);
 			if (ret != 0) {
 				consoleClear();
-				printf("%sUnable to delete %s%s\n", BG_RED, filePath, RESET);
 				result = -1;
+				err_show_errno(errno, "remove");
+				return;
 			}
 		}
 	}

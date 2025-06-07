@@ -74,12 +74,10 @@ int draw_delete_dialouge(void) {
 		gspWaitForVBlank();
 		hidScanInput();
 		u32 exitkDown = hidKeysDown();
-		if (exitkDown & KEY_A) {
+		if (exitkDown & KEY_A)
 			return 0;
-		}
-		else if (exitkDown & KEY_B) {
+		else if (exitkDown & KEY_B)
 			return 1;
-		}
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 	}

@@ -2,26 +2,22 @@
 #include "btn.h"
 #include "fs.h"
 #include "draw.h"
+#include "err.h"
 #include "ctm.h"
 
 void btn_up(void) {
 	if (size_of_file_array != 0) {
-		if (selected+scroll == 0) {
+		if (selected + scroll == 0) {
 			if (size_of_file_array > MAX_FILES_ON_SCREEN) {
-				selected = MAX_FILES_ON_SCREEN-1;
+				selected = MAX_FILES_ON_SCREEN - 1;
 				// scroll will be max size it can be
-				scroll = size_of_file_array-MAX_FILES_ON_SCREEN;
+				scroll = size_of_file_array - MAX_FILES_ON_SCREEN;
+			} else {
+				selected = size_of_file_array - 1;
 			}
-			else {
-				selected = size_of_file_array-1;
-			}
-		}
-
-		else if (scroll > 0) {
+		} else if (scroll > 0) {
 			scroll--;
-		}
-
-		else {
+		} else {
 			selected--;
 		}
 	}
@@ -29,16 +25,12 @@ void btn_up(void) {
 
 void btn_down(void) {
 	if (size_of_file_array != 0) {
-		if (selected+scroll == size_of_file_array-1) {
+		if (selected + scroll == size_of_file_array - 1) {
 			selected = 0;
 			scroll = 0;
-		}
-
-		else if ((selected == MAX_FILES_ON_SCREEN-1) && (selected+scroll < size_of_file_array-1)) {
+		} else if ((selected == MAX_FILES_ON_SCREEN - 1) && (selected + scroll < size_of_file_array - 1)) {
 			scroll++;
-		}
-
-		else {
+		} else {
 			selected++;
 		}
 	}
@@ -56,8 +48,7 @@ void btn_right(void) {
 		if (size_of_file_array > MAX_FILES_ON_SCREEN) {
 			selected = MAX_FILES_ON_SCREEN-1;
 			scroll = size_of_file_array-MAX_FILES_ON_SCREEN;
-		}
-		else {
+		} else {
 			selected = size_of_file_array-1;
 		}
 	}
@@ -75,9 +66,7 @@ void btn_a_pressed(void) {
 
 			fs_populate_filarr(current_path);
 			draw_filearr(1);
-		}
-
-		else {
+		} else {
 			consoleSelect(&debug_screen);
 			printf("%sOpening file context menu%s\n", FG_MAGENTA, RESET);
 			ctm_open();
@@ -91,8 +80,7 @@ void btn_b_pressed(void) {
 	if (!strcmp(current_path, "sdmc:/")) {
 		consoleSelect(&debug_screen);
 		printf("%scurrently in sdmc:/%s\n", FG_GREEN, RESET);
-	}
-	else {
+	} else {
 		// move up a directory
 		fs_get_ud();
 		fs_populate_filarr(current_path);
@@ -123,12 +111,10 @@ void btn_l_pressed(void) {
 	// will fail is path already exists
 	result = mkdir(path_to_create, 0700);
 
-	if (!result) {
+	if (!result)
 		printf("%sDir created%s\n", FG_MAGENTA, RESET);
-	}
-	else {
-		printf("%sError: Directory creation failed%s\n", BG_RED, RESET);
-	}
+	else
+		err_show_errno(errno, "mkdir");
 
 	fs_populate_filarr(current_path);
 	draw_filearr(1);

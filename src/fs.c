@@ -81,9 +81,8 @@ void fs_populate_filarr(char dir_to_get[]) {
 		scroll     = 0;
 		// While readdir returns something other than NULL. The variable dir will change each loop
 		while ((dir = readdir(d)) != NULL) {
-			if ((dir->d_type == 8 && stringEndsWith(dir->d_name, ".cia") || dir->d_type == 4)) {
+			if ((dir->d_type == 8 && stringEndsWith(dir->d_name, ".cia") || dir->d_type == 4))
 				count++;
-			}
 		}
 		size_of_file_array = count;
 		count = 0;
@@ -124,27 +123,21 @@ void fs_delete_dir_recursivley_(char path_to_delete[MAX_PATH_SIZE]) {
 			strcat(new_path_to_delete, dir->d_name);
 			if (dir->d_type == 8) {
 				ret = remove(new_path_to_delete);
-				if (ret) {
-					printf("%sError: unable to delete file %s%s\n", BG_RED, dir->d_name, RESET);
-				}
-				else {
+				if (ret)
+					err_show_errno(errno, "remove");
+				else
 					printf("%sDeleted file: %s%s\n", FG_MAGENTA, dir->d_name, RESET);
-				}
-			}
-			else {
+			} else {
 				fs_delete_dir_recursivley_(new_path_to_delete);
 			}
 		}
 		closedir(d);
 		ret = rmdir(path_to_delete);
-		if (ret) {
-			printf("%sError: unable to delete dir%s\n", BG_RED, RESET);
-		}
-		else {
+		if (ret)
+			err_show_errno(errno, "rmdir");
+		else
 			printf("%sDeleted dir %s%s\n", FG_MAGENTA, path_to_delete, RESET);
-		}
-	}
-	else {
+	} else {
 		// Dir doesen't exist?
 		closedir(d);
 	}
@@ -158,22 +151,17 @@ void fs_delete_selected(void) {
 	int ret;
 
 	// If it is a dir
-	if (!file_arr[selected+scroll].isfile) {
+	if (!file_arr[selected + scroll].isfile) {
 		ret = rmdir(filepath);
-		if (!ret) {
-			printf("%s%s deleted%s\n", FG_MAGENTA, file_arr[selected+scroll].name, RESET);
-		}
-		else {
+		if (!ret)
+			printf("%s%s deleted%s\n", FG_MAGENTA, file_arr[selected + scroll].name, RESET);
+		else
 			fs_delete_dir_recursivley_(filepath);
-		}
-	}
-	else {
+	} else {
 		ret = remove(filepath);
-		if (!ret) {
-			printf("%s%s deleted%s\n", FG_MAGENTA, file_arr[selected+scroll].name, RESET);
-		}
-		else {
-			printf("%sUnable to delete %s%s\n", BG_RED, file_arr[selected+scroll].name, RESET);
-		}
+		if (!ret)
+			printf("%s%s deleted%s\n", FG_MAGENTA, file_arr[selected + scroll].name, RESET);
+		else
+			err_show_errno(errno, "remove");
 	}
 }
