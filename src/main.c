@@ -421,7 +421,7 @@ int main(int argc, char *argv[]) {
 	camInit();
 
 	consoleSelect(&instruction_screen);
-	printf("A - Select\nB - Back\nX - Install from URL\nY - Start queue\nR - Delete selected item\nSTART - exit");
+	printf("A - Select\nB - Back\nX - Install from URL\nY - Start queue\nR - Delete selected item\nSTART - Exit");
 	printf("\n----------------------------------------");
 
 	consoleSelect(&header_screen);
