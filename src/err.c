@@ -740,3 +740,20 @@ void err_show_res(Result result, char task[]) {
 		gfxSwapBuffers();
 	}
 }
+
+void err_show_errno(int err, char task[]) {
+	draw_clearscrn();
+	printf("\n\n\n\t\t%s%s failed\n%s", FG_RED, task, RESET);
+	printf("\n\n\t\tI/O error: %s (%d)", strerror(err), err);
+	printf("\n\n\t\tPress [A] to continue");
+
+	while (aptMainLoop()) {
+		gspWaitForVBlank();
+		hidScanInput();
+		u32 exitkDown = hidKeysDown();
+		if (exitkDown & KEY_A)
+			return;
+		gfxFlushBuffers();
+		gfxSwapBuffers();
+	}
+}
