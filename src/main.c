@@ -398,6 +398,7 @@ int main(int argc, char *argv[]) {
 	Handle ciaHandle, fileHandle;
 	AM_TitleEntry info;
 	Result res = 0;
+	char *availableSpace;
 	gfxInitDefault();
 	consoleInit(GFX_TOP, &top_screen);
 	consoleInit(GFX_TOP, &header_screen);
@@ -412,29 +413,28 @@ int main(int argc, char *argv[]) {
 	APT_GetAppCpuTimeLimit(&old_time_limit);
 	APT_SetAppCpuTimeLimit(30);
 	// x, y, width, height
-	consoleSetWindow(&instruction_screen, 0, 0, 40, 9);
-	consoleSetWindow(&debug_screen, 0, 9, 40, 21);
+	consoleSetWindow(&instruction_screen, 0, 0, 40, 8);
+	consoleSetWindow(&debug_screen, 0, 8, 40, 22);
 
 	consoleSetWindow(&header_screen, 0, 0, 50, 1);
 	consoleSetWindow(&top_screen, 0, 1, 50, 29);
 	camInit();
 
 	consoleSelect(&instruction_screen);
-	printf("A - cd / open context menu\nB - go up a directory\nX - install from URL\nY - start queue\nR - delete dir/file\nDPAD/Circle Pad - up and down\nSTART - exit");
+	printf("A - Select\nB - Back\nX - Install from URL\nY - Start queue\nR - Delete selected item\nSTART - exit");
 	printf("\n----------------------------------------");
 
 	consoleSelect(&header_screen);
 	printf("\e[47;30m\e[2J\e[H"); //invert colors and clear screen
-	printf("CIA Installer v%s", APP_VERSION);
+	printf("CIA Installer v%s [%s]", APP_VERSION, __DATE__, (header_screen.consoleWidth - strlen(availableSpace)), availableSpace);
 
 	consoleSelect(&debug_screen);
 	printf("Started...\n");
 
 	// Initial allocation
 	file_arr = malloc(1 * sizeof(file_entry));
-	if (file_arr == NULL) {
+	if (file_arr == NULL)
 		err_show("main.c", __LINE__-2, "file_arr memory allocation failed");
-	}
 
 	static SwkbdState swkbd;
 	static char url[512];
@@ -462,6 +462,8 @@ int main(int argc, char *argv[]) {
 
 		if (quit_for_err)
 			break;
+
+		consoleSelect(&header_screen);
 
 		u32 kDown = hidKeysDown();
 		u32 kHeld = hidKeysHeld();
@@ -526,13 +528,12 @@ int main(int argc, char *argv[]) {
 				if (buf[0] != '\n' || buf[0] != '\r') {
 					int len = strlen(buf);
 					if (len > 0 && buf[len - 1] == '\n')
-						buf[len-1] = 0;
+						buf[len - 1] = 0;
 					installCiaFromFile(buf, MEDIATYPE_SD, false, false);
 					if (R_FAILED(result)) 
 						errors++;
 					line++;
-				}
-				else {
+				} else {
 					continue;
 				}
 			}
@@ -566,6 +567,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	free(file_arr);
+	free(availableSpace);
 	fsExit();
 	amExit();
 	gfxExit();

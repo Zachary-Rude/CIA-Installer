@@ -21,6 +21,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/statvfs.h>
 
 #include "colors.h" // Console colors
 

@@ -11,6 +11,12 @@ bool stringEndsWith(const char *str, const char *suffix) {
 	return (str_len >= suffix_len) && (0 == strcmp(str + (str_len - suffix_len), suffix));
 }
 
+u64 getAvailableSpace() {
+	struct statvfs st;
+	statvfs("sdmc:/", &st);
+	return (u64)st.f_bsize * (u64)st.f_bavail;
+}
+
 // Comparison function for array sorting
 int compare_file_entry(const void *a, const void *b) {
 	file_entry *fileA = (file_entry *)a;

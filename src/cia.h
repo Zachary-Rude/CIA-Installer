@@ -2,7 +2,7 @@
 #define CIA_H
 
 char *basename(char const *path);
-static const char *humanSize(uint64_t bytes);
+char *humanSize(uint64_t bytes);
 static void deletePrevious(u64 titleid);
 void consoleInitProgress(const char* header, const char* text, const float progress);
 void consoleSetProgressData(const char* text, const double progress);
