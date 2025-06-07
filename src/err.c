@@ -364,6 +364,8 @@ static const char* description_to_string(Result res) {
 			switch (description) {
 				case 4:
 					return "Wrong installation state";
+				case 32:
+					return "Empty CIA";
 				case 37:
 					return "Invalid NCCH";
 				case 39:
@@ -494,7 +496,7 @@ static const char* description_to_string(Result res) {
 				case R_APP_HTTP_TOO_MANY_REDIRECTS:
 					return "Too many redirects";
 				default:
-					if(res >= R_APP_HTTP_ERROR_BASE && res < R_APP_HTTP_ERROR_END) {
+					if (res >= R_APP_HTTP_ERROR_BASE && res < R_APP_HTTP_ERROR_END) {
 						switch (res - R_APP_HTTP_ERROR_BASE) {
 							case 100:
 								return "HTTP 100: Continue";
@@ -682,6 +684,7 @@ static const char* description_to_string(Result res) {
 			return "Invalid selection";
 		case 220:
 			return "Invalidated archive";
+		
 		default:
 			return "<unknown>";
 	}
@@ -704,14 +707,13 @@ void err_show(char file_name[], int line, char message[]) {
 	printf(message);
 	printf("\n\nPlease raise an issue at:\ngithub.com/Zachary-Rude/CIA-Installer/issues\n");
 	printf("with details of this error &\nwhat you were doing at the time\n");
-	printf("\nPress [A] to close app\n");
+	printf("\nPress START to close app\n");
 	while (aptMainLoop()) {
 		gspWaitForVBlank();
 		hidScanInput();
 		u32 exitkDown = hidKeysDown();
-		if (exitkDown & KEY_A || exitkDown & KEY_START) {
+		if (exitkDown & KEY_START)
 			return;
-		}
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 	}
@@ -732,9 +734,8 @@ void err_show_res(Result result, char task[]) {
 		gspWaitForVBlank();
 		hidScanInput();
 		u32 exitkDown = hidKeysDown();
-		if (exitkDown & KEY_A) {
+		if (exitkDown & KEY_A)
 			return;
-		}
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 	}
