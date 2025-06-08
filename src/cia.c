@@ -17,6 +17,7 @@ char *basename(char const *path) {
 	else
 		return strdup(s + 1);
 }
+
 static const char *humanSize(uint64_t bytes) {
 	char *suffix[] = {"B", "KiB", "MiB", "GiB", "TiB"};
 	char length = sizeof(suffix) / sizeof(suffix[0]);
@@ -34,6 +35,8 @@ static const char *humanSize(uint64_t bytes) {
 	return output;
 }
 
+// Code taken from FBI
+// https://github.com/Steveice10/FBI/blob/master/source/core/fs.c#L190-L197 
 FS_MediaType getTitleDestination(u64 titleId) {
 	u16 platform = (u16) ((titleId >> 48) & 0xFFFF);
 	u16 category = (u16) ((titleId >> 32) & 0xFFFF);
