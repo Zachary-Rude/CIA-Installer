@@ -299,7 +299,7 @@ void download(const uint8_t* url) {
 	CURL *hnd = curl_easy_init();
 	curl_easy_setopt(hnd, CURLOPT_BUFFERSIZE, 102400L);
 	curl_easy_setopt(hnd, CURLOPT_URL, url);
-	//curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 1L);
+	curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 0L);
 	curl_easy_setopt(hnd, CURLOPT_USERAGENT, "CIAInstaller-curl/7.58.0");
 	curl_easy_setopt(hnd, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(hnd, CURLOPT_MAXREDIRS, 50L);
@@ -329,7 +329,7 @@ void download(const uint8_t* url) {
 	if (R_SUCCEEDED(result))
 		printf("%sSuccessfully downloaded %s%s\n", FG_GREEN, url, RESET);
 	else
-		printf("%sDownload failed:  %08lX%s\n", FG_RED, result, RESET);
+		err_show_res(result, "Download");
 }
 
 int download_progress(void *bar, double t, double d, double ultotal, double ulnow) {
@@ -357,7 +357,7 @@ void downloadURL(const char* url) {
 	struct progress data;
 	curl_easy_setopt(hnd, CURLOPT_BUFFERSIZE, 102400L);
 	curl_easy_setopt(hnd, CURLOPT_URL, url);
-	curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 1L);
+	curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 0L);
 	curl_easy_setopt(hnd, CURLOPT_USERAGENT, "CIAInstaller-curl/7.58.0");
 	curl_easy_setopt(hnd, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(hnd, CURLOPT_MAXREDIRS, 50L);
