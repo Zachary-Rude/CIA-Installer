@@ -729,7 +729,6 @@ void err_show_res(Result result, char task[]) {
 	printf("\n\n\n\t\t%s%s failed\n%s", FG_RED, task, RESET);
 	printf("\n\n\t\tResult code: 0x%08lX\n\t\tLevel: %s (%d)\n\t\tSummary: %s (%d)\n\t\tModule: %s (%d)\n\t\tDesc: %s (%d)", result, level_to_string(result), level, summary_to_string(result), summary, module_to_string(result), module, description_to_string(result), description);
 	printf("\n\n\t\tPress [A] to continue");
-
 	while (aptMainLoop()) {
 		gspWaitForVBlank();
 		hidScanInput();

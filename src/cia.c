@@ -360,31 +360,31 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 	if (ciaFile == NULL) {
 		consoleClear();
 		err_show_errno(errno, "fopen");
-		result = MAKERESULT(RL_STATUS, RS_NOTFOUND, RM_FS, 120);
-		return;
+		res = MAKERESULT(RL_STATUS, RS_NOTFOUND, RM_FS, 120);
+		return res;
 	}
 	// get size of cia file with fseek and ftell, then return to file beginning
 	fseek(ciaFile, 0, SEEK_END);
 	size_t ciaSize = ftell(ciaFile);
 	fseek(ciaFile, 0, SEEK_SET);
 
-	result = FSUSER_OpenFileDirectly(&fileHandle, ARCHIVE_SDMC, fsMakePath(PATH_EMPTY, ""), fsMakePath(PATH_ASCII, filePath + 5), FS_OPEN_READ, 0);
-	if (R_FAILED(result)) {
-		err_show_res(result, "FSUSER_OpenFileDirectly");
-		return;
+	res = FSUSER_OpenFileDirectly(&fileHandle, ARCHIVE_SDMC, fsMakePath(PATH_EMPTY, ""), fsMakePath(PATH_ASCII, filePath + 5), FS_OPEN_READ, 0);
+	if (R_FAILED(res)) {
+		err_show_res(res, "FSUSER_OpenFileDirectly");
+		return res;
 	}
-	if (R_FAILED(result = AM_GetCiaFileInfo(MEDIATYPE_SD, &info, fileHandle))) {
-		err_show_res(result, "AM_GetCiaFileInfo");
-		return;
+	if (R_FAILED(res = AM_GetCiaFileInfo(MEDIATYPE_SD, &info, fileHandle))) {
+		err_show_res(res, "AM_GetCiaFileInfo");
+		return res;
 	}
 	deletePrevious(info.titleID);
 	
 	// start cia install for provided mediatype with the handle provided earlier
-	result = AM_StartCiaInstall(mediaType, &ciaHandle);
+	res = AM_StartCiaInstall(mediaType, &ciaHandle);
 	if (R_FAILED(res)) {
 		consoleClear();
-		err_show_res(result, "AM_StartCiaInstall");
-		return;
+		err_show_res(res, "AM_StartCiaInstall");
+		return res;
 	}
 	
 	u64 lastBytesPerSecondUpdate = osGetTime();
@@ -412,9 +412,9 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 		// read data with BUFSIZE size into ciaBuf
 		bytesRead = fread(ciaBuf, 1, BUFSIZE, ciaFile);
 		// write ciaBuf to the handle at the offset where we are at right now
-		result = FSFILE_Write(ciaHandle, NULL, installOffset, ciaBuf, BUFSIZE,
+		res = FSFILE_Write(ciaHandle, NULL, installOffset, ciaBuf, BUFSIZE,
 								FS_WRITE_FLUSH);
-		if (R_FAILED(result))
+		if (R_FAILED(res))
 			break;
 		// add how far weve gotten to our offset variable
 		installOffset += bytesRead;
@@ -432,10 +432,10 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 		fclose(ciaFile);
 		free(ciaBuf);
 		FSFILE_Close(fileHandle);
-		result = AM_CancelCIAInstall(ciaHandle);
-		if (R_FAILED(result)) {
+		res = AM_CancelCIAInstall(ciaHandle);
+		if (R_FAILED(res)) {
 			err_show_res(res, "AM_CancelCiaInstall");
-			return;
+			return res;
 		}
 		consoleClear();
 		if (showMessage) {
@@ -457,22 +457,22 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 		}
 		return;
 	}
-	if (R_FAILED(result)) {
+	if (R_FAILED(res)) {
 		FSFILE_Close(fileHandle);
 		AM_CancelCIAInstall(ciaHandle);
-		err_show_res(result, "FSFILE_Write");
-		return;
+		err_show_res(res, "FSFILE_Write");
+		return res;
 	}
 	// end the cia install for provided handle we used to start cia install and
 	// where we wrote the data to
-	result = AM_FinishCiaInstall(ciaHandle);
-	if (R_FAILED(result)) {
+	res = AM_FinishCiaInstall(ciaHandle);
+	if (R_FAILED(res)) {
 		fclose(ciaFile);
 		free(ciaBuf);
 		FSFILE_Close(fileHandle);
 		consoleClear();
-		err_show_res(result, "AM_FinishCiaInstall");
-		return;
+		err_show_res(res, "AM_FinishCiaInstall");
+		return res;
 	}
 	// close the cia file
 	fclose(ciaFile);
@@ -485,9 +485,9 @@ Result installCiaFromFile(char filePath[MAX_PATH_SIZE], FS_MediaType mediaType, 
 			int ret = remove(filePath);
 			if (ret != 0) {
 				consoleClear();
-				result = -1;
+				res = -1;
 				err_show_errno(errno, "remove");
-				return;
+				return res;
 			}
 		}
 	}

@@ -520,25 +520,25 @@ int main(int argc, char *argv[]) {
 			}
 
 			int errors = 0;
+			int successful = 0;
 
 			while (fgets(buf, sizeof buf, fp)) {
 				if (buf[0] != '\n' || buf[0] != '\r') {
 					int len = strlen(buf);
 					if (len > 0 && buf[len - 1] == '\n')
 						buf[len - 1] = 0;
-					installCiaFromFile(buf, MEDIATYPE_SD, false, false);
+					result = installCiaFromFile(buf, MEDIATYPE_SD, false, false);
 					if (R_FAILED(result)) 
 						errors++;
+					else
+						successful++;
 					line++;
 				} else {
 					continue;
 				}
 			}
 			draw_clearscrn();
-			if (errors > 0)
-				printf("\n\n\n\t\t%sOne or more queue items failed to install.%s", FG_RED, RESET);
-			else
-				printf("\n\n\n\t\t%sQueue finished successfully.%s", FG_GREEN, RESET);
+			printf("\n\n\n\t\t%sQueue finished%s\n\t\twith %s%d successful %s%s\n\t\tand %s%d %s%s", FG_GREEN, RESET, FG_GREEN, successful, (successful == 1 ? "install" : "installs"), RESET, FG_RED, errors, (errors == 1 ? "error" : "errors"), RESET);
 			printf("\n\n\t\tPress [A] to continue");
 			errors = 0;
 
